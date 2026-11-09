@@ -1,0 +1,67 @@
+MTG Card Viewer - Project Summary
+==================================
+
+📋 プロジェクト概要
+個別のMTGカード専用ビューワーです。Scryfall APIを利用して、
+カード名またはセット+コレクター番号でカード情報を検索・表示します。
+
+🎯 主な機能
+✓ カード名での柔軟な検索
+✓ セット+コレクター番号での正確な検索
+✓ リアルタイム検索補完
+✓ 高解像度カード画像表示
+✓ 完全なカード情報表示
+✓ Scryfallへのダイレクトリンク
+✓ ダークモード対応
+✓ レスポンシブUI
+
+📁 ファイル構成
+mtg_card_viewer.py              - メインエントリポイント
+mtg_card_viewer_window.py       - Windowsアプリ用ラッパー
+mtg_card_viewer_server.py       - HTTPサーバー
+mtg_card_search.py              - Scryfall API実装
+mtg_card_viewer.html            - フロントエンドUI
+start_card_viewer.bat           - 起動スクリプト
+requirements.txt                - 依存パッケージ
+test_search.py                  - 動作確認用テスト
+
+🚀 使用方法
+
+【Windows版（推奨）】
+1. start_card_viewer.bat をダブルクリック
+2. ウィンドウが自動で開く
+3. カード名またはセット+番号を入力して検索
+
+【Python版】
+1. python mtg_card_viewer.py を実行
+2. ブラウザで http://localhost:5000 を開く
+   ※実際のポート番号はコンソール出力を確認
+
+📋 動作要件
+- Windows 10/11
+- Python 3.9 以上
+- Microsoft Edge WebView2 Runtime
+- インターネット接続
+
+🔧 セットアップ
+1. 本フォルダに移動
+2. python -m pip install -r requirements.txt
+3. start_card_viewer.bat をダブルクリック
+
+💡 検索ヒント
+- カード名: 英語名または日本語名を入力（補完機能あり）
+  例: Lightning Bolt / 稲妻
+      Island / 島
+  
+- セット+番号: セットコード（小文字）と番号
+  例: neo (セット), 129 (カード番号)
+
+🔗 関連サイト
+Scryfall: https://scryfall.com
+MTG Wiki: https://mtg.wikia.com
+
+✨ 特徴
+- Deck Viewerとの組み合わせで、デッキ内のカードを詳しく表示可能
+- シンプルで使いやすいUI
+- 本家Scryfallへのリンク機能
+- 両面カード・特殊カード対応

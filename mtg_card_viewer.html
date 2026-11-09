@@ -1,0 +1,777 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MTG Card Viewer</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: "Segoe UI", "Yu Gothic UI", sans-serif;
+        background: #101417;
+        color: #f0f3f4;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        min-width: 320px;
+        background:
+          radial-gradient(ellipse at 85% -10%, #27393b 0, transparent 38rem),
+          #101417;
+      }
+
+      main {
+        width: 100%;
+        max-width: 450px;
+        margin: 0 auto;
+        padding: 4px 6px 6px;
+      }
+
+      h1 { 
+        margin: 0 0 1px;
+        font-size: 1.1rem;
+      }
+
+      .intro { 
+        color: #aeb9bb; 
+        margin: 0 0 4px;
+        font-size: 0.75rem;
+      }
+
+      .search-section {
+        margin-bottom: 8px;
+        padding: 8px;
+        border: 1px solid #354144;
+        border-radius: 8px;
+        background: #191f22e8;
+      }
+
+      .search-group {
+        margin-bottom: 8px;
+        position: relative;
+      }
+
+      .search-group:last-child {
+        margin-bottom: 0;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 4px;
+        color: #aeb9bb;
+        font-size: 0.8rem;
+        font-weight: 500;
+      }
+
+      input {
+        display: block;
+        width: 100%;
+        padding: 6px 10px;
+        border: 1px solid #4a5759;
+        border-radius: 6px;
+        background: #0e1214;
+        color: inherit;
+        font: 13px inherit;
+      }
+
+      input:focus {
+        outline: 2px solid #70d7bd;
+        outline-offset: 2px;
+      }
+
+      .suggestions {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        max-height: 500px;
+        overflow-y: auto;
+        background: #0e1214;
+        border: 1px solid #4a5759;
+        border-top: 1px solid #354144;
+        border-radius: 0 0 6px 6px;
+        z-index: 100;
+        margin-top: 0;
+      }
+
+      .suggestion-item {
+        padding: 8px 10px;
+        cursor: pointer;
+        border-bottom: 1px solid #1a2023;
+        transition: background-color 0.15s;
+      }
+
+      .suggestion-item:hover {
+        background-color: #1a2023;
+      }
+
+      .suggestion-name {
+        font-weight: 500;
+        color: #f0f3f4;
+        font-size: 0.9rem;
+      }
+
+      .suggestion-meta {
+        color: #aeb9bb;
+        font-size: 0.75rem;
+        margin-top: 2px;
+      }
+
+      .actions {
+        display: flex;
+        gap: 6px;
+      }
+
+      button {
+        flex: 1;
+        padding: 6px 12px;
+        border: 1px solid #526164;
+        border-radius: 6px;
+        background: #222c2f;
+        color: inherit;
+        font: 13px inherit;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      button:hover {
+        background: #2e3b3e;
+      }
+
+      button:focus-visible {
+        outline: 2px solid #70d7bd;
+        outline-offset: 2px;
+      }
+
+      button.primary {
+        border-color: #42b999;
+        background: #18866b;
+        font-weight: 700;
+      }
+
+      button.primary:hover {
+        background: #209a7b;
+      }
+
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .status {
+        min-height: 1.2em;
+        margin-top: 6px;
+        color: #aeb9bb;
+        font-size: 0.8rem;
+      }
+
+      .status.error {
+        color: #ff9a94;
+      }
+
+      .status.success {
+        color: #8fe1c8;
+      }
+
+      .status.loading {
+        color: #aeb9bb;
+      }
+
+      .card-container {
+        margin-top: 6px;
+        padding: 0;
+      }
+
+      .card-display {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+      }
+
+      .card-image-section {
+        text-align: center;
+      }
+
+      .card-image-link {
+        display: inline-block;
+        cursor: pointer;
+        text-decoration: none;
+      }
+
+      .card-image-link:hover img {
+        opacity: 0.9;
+        transform: scale(1.02);
+      }
+
+      .card-image {
+        max-width: 100%;
+        height: auto;
+        max-height: 600px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        transition: all 0.2s;
+      }
+
+      .card-details {
+        padding: 12px;
+        border: 1px solid #354144;
+        border-radius: 8px;
+        background: #191f22e8;
+      }
+
+      .card-header {
+        margin-bottom: 8px;
+        border-bottom: 1px solid #354144;
+        padding-bottom: 8px;
+      }
+
+      .card-name {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin: 0 0 4px;
+      }
+
+      .card-type {
+        color: #aeb9bb;
+        margin: 0;
+        font-size: 0.8rem;
+      }
+
+      .card-meta {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 6px;
+        margin-top: 8px;
+      }
+
+      .meta-item {
+        padding: 6px;
+        border: 1px solid #354144;
+        border-radius: 4px;
+        background: #0e1214;
+      }
+
+      .meta-label {
+        color: #9eabad;
+        font-size: 0.7rem;
+        font-weight: 500;
+        text-transform: uppercase;
+      }
+
+      .meta-value {
+        font-weight: 600;
+        margin-top: 2px;
+        font-size: 0.9rem;
+      }
+
+      .card-text {
+        margin-top: 8px;
+      }
+
+      .card-text h3 {
+        margin: 0 0 4px;
+        font-size: 0.8rem;
+        color: #aeb9bb;
+        text-transform: uppercase;
+        font-weight: 500;
+      }
+
+      .rules-text {
+        line-height: 1.4;
+        font-size: 0.8rem;
+        color: #d4d9db;
+      }
+
+      .card-set-info {
+        margin-top: 6px;
+        color: #9eabad;
+        font-size: 0.75rem;
+      }
+
+      .card-link {
+        display: inline-block;
+        margin-top: 6px;
+        padding: 4px 10px;
+        border: 1px solid #42b999;
+        border-radius: 4px;
+        background: transparent;
+        color: #70d7bd;
+        text-decoration: none;
+        font-size: 0.75rem;
+        transition: all 0.2s;
+      }
+
+      .card-link:hover {
+        background: rgba(66, 185, 153, 0.1);
+      }
+
+      .error-display {
+        padding: 12px;
+        border: 1px solid #ff9a94;
+        border-radius: 8px;
+        background: rgba(255, 154, 148, 0.1);
+        color: #ff9a94;
+        text-align: center;
+        font-size: 0.85rem;
+      }
+
+      .empty-state {
+        padding: 20px 10px;
+        text-align: center;
+        color: #9eabad;
+      }
+
+      .empty-state-icon {
+        font-size: 2rem;
+        margin-bottom: 8px;
+      }
+
+      .suggestions {
+        margin-top: 6px;
+        max-height: 150px;
+        overflow-y: auto;
+        border: 1px solid #354144;
+        border-radius: 6px;
+        background: #0e1214;
+      }
+
+      .suggestion-item {
+        padding: 6px 8px;
+        border-bottom: 1px solid #354144;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      .suggestion-item:last-child {
+        border-bottom: none;
+      }
+
+      .suggestion-item:hover {
+        background: #1a2224;
+      }
+
+      .suggestion-name {
+        font-weight: 600;
+        color: #f0f3f4;
+        font-size: 0.85rem;
+      }
+
+      .suggestion-meta {
+        font-size: 0.75rem;
+        color: #9eabad;
+        margin-top: 1px;
+      }
+
+      @media (max-width: 600px) {
+        main {
+          padding: 8px 10px 10px;
+        }
+
+        h1 {
+          font-size: 1.1rem;
+        }
+
+        .card-display {
+          gap: 8px;
+        }
+      }
+
+      /* Context menu styles */
+      .context-menu {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 10000;
+        min-width: 150px;
+        background: #1a2023;
+        border: 1px solid #4a5759;
+        border-radius: 6px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+        padding: 4px 0;
+        list-style: none;
+        margin: 0;
+      }
+
+      .context-menu-item {
+        padding: 8px 16px;
+        cursor: pointer;
+        color: #f0f3f4;
+        font-size: 0.9rem;
+        white-space: nowrap;
+        transition: background-color 0.15s;
+      }
+
+      .context-menu-item:hover {
+        background-color: #2a3437;
+      }
+
+      .context-menu-item:active {
+        background-color: #3a4447;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>🔍 MTG Card Viewer</h1>
+      <p class="intro">Scryfallからカード情報を検索します</p>
+
+      <div class="search-section">
+        <div class="search-group">
+          <label for="card-name">カード名</label>
+          <input type="text" id="card-name" placeholder="例: Lightning Bolt / 稲妻" />
+          <div class="suggestions" id="suggestions-name" style="display: none;"></div>
+        </div>
+
+        <div class="actions">
+          <button class="primary" onclick="searchCard()">検索</button>
+          <button onclick="clearSearch()">クリア</button>
+        </div>
+        <div class="status" id="status"></div>
+      </div>
+
+      <div class="card-container" id="card-container">
+        <div class="empty-state">
+          <div class="empty-state-icon">♠</div>
+          <p>カードを検索してください</p>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      let currentCard = null;
+      let suggestionTimeout = null;
+
+      async function searchCard() {
+        clearStatus();
+        setStatus('検索中...', 'loading');
+
+        try {
+          const name = document.getElementById('card-name').value.trim();
+          if (!name) {
+            setStatus('カード名を入力してください', 'error');
+            return;
+          }
+          await fetchCardByName(name);
+        } catch (error) {
+          setStatus(`エラー: ${error.message}`, 'error');
+        }
+      }
+
+      async function fetchCardByName(name) {
+        const response = await fetch(`/api/card/search?name=${encodeURIComponent(name)}`);
+        const data = await response.json();
+
+        if (response.ok && data.card) {
+          displayCard(data.card);
+          setStatus('カードを読み込みました', 'success');
+        } else {
+          displayError(data.error || '見つかりません');
+        }
+      }
+
+      async function fetchSuggestions(query) {
+        if (query.length < 2) {
+          document.getElementById('suggestions-name').style.display = 'none';
+          return;
+        }
+
+        // Cancel previous timeout if exists
+        if (suggestionTimeout) {
+          clearTimeout(suggestionTimeout);
+        }
+
+        // Wait 300ms after user stops typing before fetching suggestions
+        suggestionTimeout = setTimeout(async () => {
+          try {
+            const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+            const data = await response.json();
+
+            if (data.results && data.results.length > 0) {
+              displaySuggestions(data.results);
+            } else {
+              document.getElementById('suggestions-name').style.display = 'none';
+            }
+          } catch (error) {
+            console.error('検索エラー:', error);
+          }
+        }, 300);
+      }
+
+      function displaySuggestions(results) {
+        const container = document.getElementById('suggestions-name');
+        container.innerHTML = results.map((card, index) => {
+          // Use printed_name (Japanese) if available, otherwise use name (English)
+          const displayName = card.printed_name || card.name;
+          return `
+          <div class="suggestion-item" onclick="selectSuggestion(${index}, event)">
+            <div class="suggestion-name">${escapeHtml(displayName)}</div>
+            <div class="suggestion-meta">${escapeHtml(card.type)} • ${escapeHtml(card.set)}</div>
+          </div>
+        `;
+        }).join('');
+        container.style.display = 'block';
+        container.dataset.results = JSON.stringify(results);
+      }
+
+      function selectSuggestion(index, event) {
+        const container = document.getElementById('suggestions-name');
+        const results = JSON.parse(container.dataset.results || '[]');
+        const selectedCard = results[index];
+        
+        if (!selectedCard) return;
+        
+        // Use printed_name (Japanese) if available, otherwise use name (English)
+        const displayName = selectedCard.printed_name || selectedCard.name;
+        document.getElementById('card-name').value = displayName;
+        document.getElementById('suggestions-name').style.display = 'none';
+        
+        // Directly display the card from suggestion without re-searching
+        displayCard(selectedCard);
+        setStatus('カードを読み込みました', 'success');
+      }
+
+      function displayCard(card) {
+        let html = '<div class="card-display">';
+
+        // 画像のみ表示（クリック可能）
+        if (card.image_url && card.scryfall_url) {
+          html += `<div class="card-image-section">
+            <a href="${card.scryfall_url}" target="_blank" class="card-image-link">
+              <img src="${card.image_url}" alt="${escapeHtml(card.name)}" class="card-image" />
+            </a>
+          </div>`;
+        } else if (card.image_url) {
+          html += `<div class="card-image-section">
+            <img src="${card.image_url}" alt="${escapeHtml(card.name)}" class="card-image" />
+          </div>`;
+        }
+
+        html += '</div>';
+
+        document.getElementById('card-container').innerHTML = html;
+        currentCard = card;
+      }
+
+      let countdownInterval = null;
+
+      function displayError(message) {
+        // Check for rate limit error (429)
+        if (message.includes('429') || message.includes('rate-limited')) {
+          startCountdown();
+        }
+        document.getElementById('card-container').innerHTML = `<div class="error-display">${escapeHtml(message)}</div>`;
+        currentCard = null;
+      }
+
+      function startCountdown() {
+        // Clear existing countdown if any
+        if (countdownInterval) {
+          clearInterval(countdownInterval);
+        }
+
+        let remainingSeconds = 60;
+        const statusEl = document.getElementById('status');
+
+        // Display initial message
+        setStatus(`レート制限: ${remainingSeconds}秒待機中...`, 'error');
+
+        // Update countdown every second
+        countdownInterval = setInterval(() => {
+          remainingSeconds--;
+          
+          if (remainingSeconds > 0) {
+            setStatus(`レート制限: ${remainingSeconds}秒待機中...`, 'error');
+          } else {
+            clearInterval(countdownInterval);
+            setStatus('レート制限が解除されました。再度検索してください。', 'success');
+          }
+        }, 1000);
+      }
+
+      function clearSearch() {
+        document.getElementById('card-name').value = '';
+        document.getElementById('set-code').value = '';
+        document.getElementById('collector-number').value = '';
+        document.getElementById('suggestions-name').style.display = 'none';
+        document.getElementById('card-container').innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">♠</div>
+            <p>カードを検索してください</p>
+          </div>
+        `;
+        clearStatus();
+        currentCard = null;
+      }
+
+      function setStatus(message, type) {
+        const status = document.getElementById('status');
+        status.textContent = message;
+        status.className = 'status ' + type;
+      }
+
+      function clearStatus() {
+        document.getElementById('status').textContent = '';
+        document.getElementById('status').className = 'status';
+      }
+
+      function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      // Context menu functionality
+      let contextMenuTarget = null;
+
+      function showContextMenu(e) {
+        e.preventDefault();
+        
+        const input = e.target;
+        if (input.tagName !== 'INPUT') return;
+        
+        contextMenuTarget = input;
+        
+        // Remove existing menu
+        const existing = document.querySelector('.context-menu');
+        if (existing) existing.remove();
+        
+        // Create menu
+        const menu = document.createElement('ul');
+        menu.className = 'context-menu';
+        
+        // 切り取り
+        if (document.queryCommandSupported('cut')) {
+          const cutItem = document.createElement('li');
+          cutItem.className = 'context-menu-item';
+          cutItem.textContent = '切り取り (Ctrl+X)';
+          cutItem.onclick = () => {
+            document.execCommand('cut');
+            menu.remove();
+          };
+          menu.appendChild(cutItem);
+        }
+        
+        // コピー
+        if (document.queryCommandSupported('copy')) {
+          const copyItem = document.createElement('li');
+          copyItem.className = 'context-menu-item';
+          copyItem.textContent = 'コピー (Ctrl+C)';
+          copyItem.onclick = () => {
+            document.execCommand('copy');
+            menu.remove();
+          };
+          menu.appendChild(copyItem);
+        }
+        
+        // 貼り付け
+        const pasteItem = document.createElement('li');
+        pasteItem.className = 'context-menu-item';
+        pasteItem.textContent = '貼り付け (Ctrl+V)';
+        pasteItem.onclick = async () => {
+          try {
+            const text = await navigator.clipboard.readText();
+            const input = contextMenuTarget;
+            
+            // Insert text at cursor position
+            const start = input.selectionStart;
+            const end = input.selectionEnd;
+            const before = input.value.substring(0, start);
+            const after = input.value.substring(end);
+            
+            input.value = before + text + after;
+            input.selectionStart = input.selectionEnd = start + text.length;
+            input.focus();
+            
+            // Trigger input events for suggestions
+            input.dispatchEvent(new Event('keyup', { bubbles: true }));
+          } catch (err) {
+            console.error('Paste failed:', err);
+          }
+          menu.remove();
+        };
+        menu.appendChild(pasteItem);
+        
+        // すべて選択
+        if (document.queryCommandSupported('selectAll')) {
+          const selectItem = document.createElement('li');
+          selectItem.className = 'context-menu-item';
+          selectItem.textContent = 'すべて選択 (Ctrl+A)';
+          selectItem.onclick = () => {
+            document.execCommand('selectAll');
+            menu.remove();
+          };
+          menu.appendChild(selectItem);
+        }
+        
+        // Position and show menu
+        menu.style.top = e.clientY + 'px';
+        menu.style.left = e.clientX + 'px';
+        document.body.appendChild(menu);
+      }
+
+      // Close context menu when clicking elsewhere
+      document.addEventListener('click', () => {
+        const menu = document.querySelector('.context-menu');
+        if (menu) menu.remove();
+      });
+
+      // Ctrl+V paste handler
+      async function handlePaste(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'v') {
+          e.preventDefault();
+          
+          try {
+            const text = await navigator.clipboard.readText();
+            const input = e.target;
+            
+            // Insert text at cursor position
+            const start = input.selectionStart;
+            const end = input.selectionEnd;
+            const before = input.value.substring(0, start);
+            const after = input.value.substring(end);
+            
+            input.value = before + text + after;
+            input.selectionStart = input.selectionEnd = start + text.length;
+            
+            // Trigger input events for suggestions
+            input.dispatchEvent(new Event('keyup', { bubbles: true }));
+          } catch (err) {
+            console.error('Paste failed:', err);
+          }
+        }
+      }
+
+      // イベントリスナー
+      const cardNameInput = document.getElementById('card-name');
+      const setCodeInput = document.getElementById('set-code');
+      const collectorNumberInput = document.getElementById('collector-number');
+
+      cardNameInput.addEventListener('keyup', (e) => {
+        if (e.key === 'Enter') {
+          searchCard();
+        } else {
+          fetchSuggestions(e.target.value);
+        }
+      });
+
+      cardNameInput.addEventListener('keydown', handlePaste);
+      cardNameInput.addEventListener('contextmenu', showContextMenu);
+
+      setCodeInput.addEventListener('keyup', (e) => {
+        if (e.key === 'Enter') searchCard();
+      });
+
+      setCodeInput.addEventListener('keydown', handlePaste);
+      setCodeInput.addEventListener('contextmenu', showContextMenu);
+
+      collectorNumberInput.addEventListener('keyup', (e) => {
+        if (e.key === 'Enter') searchCard();
+      });
+
+      collectorNumberInput.addEventListener('keydown', handlePaste);
+      collectorNumberInput.addEventListener('contextmenu', showContextMenu);
+    </script>
+  </body>
+</html>
