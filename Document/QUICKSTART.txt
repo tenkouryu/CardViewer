@@ -1,0 +1,48 @@
+MTG Card Viewer - Quick Start
+=============================
+
+PROJECT LAYOUT
+--------------
+
+CardViewer/
+  Src/                    Application source and tests
+  Document/               Project documentation
+  build/                  PyInstaller intermediate files
+  release/                Distributable application
+  mtg_card_viewer.html    User interface
+  requirements.txt        Runtime dependencies
+  requirements-build.txt  Build dependencies
+  README.md               Project guide
+
+RUN FROM SOURCE
+---------------
+
+From the project root:
+
+  python -m pip install -r requirements.txt
+  Src\start_card_viewer.bat
+
+Or run Python directly:
+
+  cd Src
+  python mtg_card_viewer.py
+
+REBUILD THE WINDOWS APPLICATION
+-------------------------------
+
+From the project root:
+
+  python -m pip install -r requirements-build.txt
+  Src\build_card_viewer.bat
+
+The executable is written to release\MTGCardViewerApp.exe.
+
+REQUIREMENTS
+------------
+
+  - Windows 10/11
+  - Python 3.9 or later for source runs and builds
+  - Microsoft Edge WebView2 Runtime
+  - Internet connection for Scryfall card data
+
+See README.md for usage and Document/PROJECT_STRUCTURE.md for the full layout.

@@ -16,14 +16,16 @@ MTG Card Viewer - Project Summary
 ✓ レスポンシブUI
 
 📁 ファイル構成
-mtg_card_viewer.py              - メインエントリポイント
-mtg_card_viewer_window.py       - Windowsアプリ用ラッパー
-mtg_card_viewer_server.py       - HTTPサーバー
-mtg_card_search.py              - Scryfall API実装
+Src/mtg_card_viewer.py          - メインエントリポイント
+Src/mtg/                        - 検索・サーバー・ウィンドウ実装
+Src/start_card_viewer.bat       - 起動スクリプト
+Src/tests/                      - テスト用ファイル
 mtg_card_viewer.html            - フロントエンドUI
-start_card_viewer.bat           - 起動スクリプト
-requirements.txt                - 依存パッケージ
-test_search.py                  - 動作確認用テスト
+requirements.txt                - 実行時依存パッケージ
+requirements-build.txt          - ビルド用依存パッケージ
+Document/                       - プロジェクトドキュメント
+build/                          - ビルド中間ファイル
+release/                        - 配布用実行ファイル
 
 🚀 使用方法
 
@@ -44,9 +46,9 @@ test_search.py                  - 動作確認用テスト
 - インターネット接続
 
 🔧 セットアップ
-1. 本フォルダに移動
+1. リポジトリのルートに移動
 2. python -m pip install -r requirements.txt
-3. start_card_viewer.bat をダブルクリック
+3. Src\start_card_viewer.bat をダブルクリック
 
 💡 検索ヒント
 - カード名: 英語名または日本語名を入力（補完機能あり）

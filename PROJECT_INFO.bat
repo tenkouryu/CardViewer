@@ -11,7 +11,7 @@ echo.
 echo 📦 PROJECT STRUCTURE
 echo ────────────────────────────────────────────────────
 echo  MTGCardViewer\
-echo  ├─ src\
+echo  ├─ Src\
 echo  │  ├─ mtg\               [Python Package]
 echo  │  │  ├─ __init__.py
 echo  │  │  ├─ mtg_card_search.py
@@ -32,10 +32,8 @@ echo  │
 echo  ├─ mtg_card_viewer.html [UI]
 echo  ├─ requirements.txt
 echo  ├─ requirements-build.txt
-echo  ├─ README.md            [Full Docs]
-echo  ├─ PROJECT_STRUCTURE.md [Technical]
-echo  ├─ QUICKSTART.txt
-echo  └─ SUMMARY.txt
+echo  ├─ Document\           [Project documents]
+echo  └─ README.md            [Full Docs]
 echo.
 
 echo 🚀 QUICK START
@@ -44,10 +42,10 @@ echo  Method 1 (Easiest):
 echo    → release\MTGCardViewerApp.exe
 echo.
 echo  Method 2 (Source):
-echo    → src\start_card_viewer.bat
+echo    → Src\start_card_viewer.bat
 echo.
 echo  Method 3 (Developer):
-echo    → cd src
+echo    → cd Src
 echo    → python mtg_card_viewer.py
 echo.
 
@@ -67,8 +65,8 @@ echo.
 echo 📚 DOCUMENTATION
 echo ────────────────────────────────────────────────────
 echo  • README.md              [User guide]
-echo  • PROJECT_STRUCTURE.md   [Architecture]
-echo  • QUICKSTART.txt         [Quick reference]
+echo  • Document\PROJECT_STRUCTURE.md [Architecture]
+echo  • Document\QUICKSTART.txt       [Quick reference]
 echo  • release\README.txt     [Exe instructions]
 echo.
 

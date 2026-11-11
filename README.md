@@ -25,19 +25,19 @@ Python のインストールは不要です。Microsoft Edge WebView2 Runtime �
 Windows で Python 3.9 以降を用意し、リポジトリのルートで依存パッケージをインストールします。
 
 ```powershell
-python -m pip install -r Doc\requirements.txt
+python -m pip install -r requirements.txt
 ```
 
 次に、起動用バッチファイルを実行します。
 
 ```powershell
-.\src\start_card_viewer.bat
+.\Src\start_card_viewer.bat
 ```
 
 または、次のように Python から直接起動できます。
 
 ```powershell
-Set-Location src
+Set-Location Src
 python mtg_card_viewer.py
 ```
 
@@ -60,23 +60,26 @@ python mtg_card_viewer.py
 ```text
 .
 ├── mtg_card_viewer.html       # UI
-├── src/
+├── Src/
 │   ├── mtg_card_viewer.py     # 起動エントリーポイント
 │   ├── start_card_viewer.bat  # Windows 用起動スクリプト
 │   └── mtg/                   # 検索処理、HTTP サーバー、ウィンドウ
+├── requirements.txt           # 実行時依存パッケージ
+├── requirements-build.txt     # ビルド用依存パッケージ
+├── Document/                  # 追加ドキュメント
+├── build/                     # PyInstaller の中間ファイル
 ├── release/
 │   └── MTGCardViewerApp.exe   # 配布用アプリ
-└── Doc/                       # 追加ドキュメントと依存ファイル
 ```
 
 PyInstaller で実行ファイルをビルドする場合は、ビルド用依存パッケージをインストールしてからビルドスクリプトを実行します。
 
 ```powershell
-python -m pip install -r Doc\requirements-build.txt
-.\src\build_card_viewer_simple.bat
+python -m pip install -r requirements-build.txt
+.\Src\build_card_viewer.bat
 ```
 
-詳しい構成や検索仕様については、[`Doc/PROJECT_STRUCTURE.md`](Doc/PROJECT_STRUCTURE.md) と [`Doc/JAPANESE_SEARCH.md`](Doc/JAPANESE_SEARCH.md) を参照してください。
+詳しい構成や検索仕様については、[`Document/PROJECT_STRUCTURE.md`](Document/PROJECT_STRUCTURE.md) と [`Document/JAPANESE_SEARCH.md`](Document/JAPANESE_SEARCH.md) を参照してください。
 
 ## 外部サービスと商標
 

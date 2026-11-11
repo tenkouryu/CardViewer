@@ -1,0 +1,23 @@
+MTG Card Viewer - Build Summary
+===============================
+
+The project follows the reference layout with source code in Src/, supporting
+documentation in Document/, PyInstaller output in build/, and distributable
+files in release/. Runtime and build requirements are kept at the repository
+root.
+
+Rebuild from the repository root:
+
+  python -m pip install -r requirements-build.txt
+  Src\build_card_viewer.bat
+
+The build script creates or updates:
+
+  build\MTGCardViewerApp.spec
+  build\card_viewer\
+  release\MTGCardViewerApp.exe
+
+Run the source version with:
+
+  python -m pip install -r requirements.txt
+  Src\start_card_viewer.bat
